@@ -1,284 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Himalayan Carbon Labs | Dashboard</title>
-
+    
     <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <!-- Leaflet Map CSS -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-      body {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        background-color: #022c22;
-        background-image: radial-gradient(
-            at 0% 0%,
-            hsla(160, 100%, 15%, 1) 0,
-            transparent 50%
-          ),
-          radial-gradient(
-            at 100% 100%,
-            hsla(170, 100%, 10%, 1) 0,
-            transparent 50%
-          );
-      }
-      .glass {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      }
-      .hover-float {
-        transition: all 0.3s ease;
-      }
-      .hover-float:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.15);
-        border-color: rgba(16, 185, 129, 0.3);
-      }
-      .glow-text {
-        text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
-      }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #022c22;
+            background-image: radial-gradient(at 0% 0%, hsla(160,100%,15%,1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(170,100%,10%,1) 0, transparent 50%);
+            background-attachment: fixed;
+        }
+        
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hover-float { transition: all 0.3s ease; }
+        .hover-float:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2); 
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        
+        .glow-text { text-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
+
+        /* Dark Mode Map Trick */
+        .leaflet-layer {
+            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        }
+        
+        /* Map Background dark to prevent white flash */
+        #map { background: #1a1a1a; }
+
+        /* Animation for Calculator Update */
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); color: #34d399; } 100% { transform: scale(1); } }
+        .animate-pop { animation: pop 0.3s ease-in-out; }
     </style>
-  </head>
-  <body class="text-gray-200 min-h-screen pb-10">
+</head>
+<body class="text-gray-200 min-h-screen pb-10">
+
     <!-- Navbar -->
-    <nav
-      class="sticky top-0 z-50 glass px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 mb-8"
-    >
-      <div class="flex items-center gap-3">
-        <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
-          <i class="fa-solid fa-leaf text-2xl"></i>
+    <nav class="sticky top-0 z-[1000] glass px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
+                <i class="fa-solid fa-leaf text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight text-white">
+                Himalayan <span class="text-emerald-400">Carbon Labs</span>
+            </h1>
         </div>
-        <h1 class="text-2xl font-extrabold tracking-tight text-white">
-          Himalayan <span class="text-emerald-400">Carbon Labs</span>
-        </h1>
-      </div>
-      <button
-        onclick="generatePDF()"
-        class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2"
-      >
-        <i class="fa-solid fa-download"></i> Download Report
-      </button>
+        <button onclick="generatePDF()" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2">
+            <i class="fa-solid fa-download"></i> Download Report
+        </button>
     </nav>
 
     <!-- Main Content -->
     <main id="dashboard-content" class="px-6 max-w-7xl mx-auto space-y-8">
-      <div class="border-b border-white/10 pb-4 mb-4">
-        <h2 class="text-2xl font-bold text-white">Carbon MRV Dashboard</h2>
-        <p class="text-emerald-400 text-sm mt-1">
-          <i class="fa-solid fa-location-dot mr-1"></i> Uttarkashi Pilot
-          Project, Uttarakhand
-        </p>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="glass hover-float p-6 rounded-2xl">
-          <h3
-            class="text-gray-400 text-sm font-semibold tracking-wider uppercase"
-          >
-            Total Area Mapped
-          </h3>
-          <div class="flex items-end gap-2 mt-3">
-            <p class="text-4xl font-extrabold text-white">100</p>
-            <span class="text-emerald-400 font-medium mb-1">Hectares</span>
-          </div>
-        </div>
-        <div
-          class="glass hover-float p-6 rounded-2xl border-b-2 border-b-emerald-500"
-        >
-          <h3
-            class="text-gray-400 text-sm font-semibold tracking-wider uppercase"
-          >
-            Carbon Credits
-          </h3>
-          <div class="flex items-end gap-2 mt-3">
-            <p
-              id="credit-display"
-              class="text-4xl font-extrabold text-emerald-400 glow-text"
-            >
-              500
-            </p>
-            <span class="text-emerald-400 font-medium mb-1">tCO2e</span>
-          </div>
-        </div>
-        <div class="glass hover-float p-6 rounded-2xl">
-          <h3
-            class="text-gray-400 text-sm font-semibold tracking-wider uppercase"
-          >
-            Estimated Revenue
-          </h3>
-          <div class="flex items-end gap-2 mt-3">
-            <p
-              id="revenue-display"
-              class="text-4xl font-extrabold text-yellow-400"
-            >
-              $5,000
-            </p>
-            <span class="text-yellow-500 font-medium mb-1">USD</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Map and Chart Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass p-5 rounded-2xl flex flex-col h-[450px]">
-          <h3 class="text-lg font-bold text-white mb-4">
-            <i class="fa-solid fa-satellite-dish text-emerald-400 mr-2"></i>
-            Satellite MRV Area
-          </h3>
-          <!-- Map Container - Height is Fixed here -->
-          <div
-            id="map"
-            class="w-full h-[350px] rounded-xl z-0 border border-white/10"
-          ></div>
+        
+        <div class="border-b border-white/10 pb-4 mb-4">
+            <h2 class="text-2xl font-bold text-white">Carbon MRV Dashboard</h2>
+            <p class="text-emerald-400 text-sm mt-1"><i class="fa-solid fa-location-dot mr-1"></i> Uttarkashi Pilot Project, Uttarakhand</p>
         </div>
 
-        <div class="glass p-5 rounded-2xl flex flex-col h-[450px]">
-          <h3 class="text-lg font-bold text-white mb-4">
-            <i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i> Carbon
-            Distribution
-          </h3>
-          <div
-            class="flex-grow flex justify-center items-center relative w-full h-[350px]"
-          >
-            <canvas id="carbonChart"></canvas>
-          </div>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass hover-float p-6 rounded-2xl">
+                <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Area Mapped</h3>
+                <div class="flex items-end gap-2 mt-3">
+                    <p id="area-display" class="text-4xl font-extrabold text-white">100</p>
+                    <span class="text-emerald-400 font-medium mb-1">Hectares</span>
+                </div>
+            </div>
+            <div class="glass hover-float p-6 rounded-2xl border-b-2 border-b-emerald-500">
+                <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Carbon Credits</h3>
+                <div class="flex items-end gap-2 mt-3">
+                    <p id="credit-display" class="text-4xl font-extrabold text-emerald-400 glow-text transition-all">500</p>
+                    <span class="text-emerald-400 font-medium mb-1">tCO2e</span>
+                </div>
+            </div>
+            <div class="glass hover-float p-6 rounded-2xl">
+                <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Estimated Revenue</h3>
+                <div class="flex items-end gap-2 mt-3">
+                    <p id="revenue-display" class="text-4xl font-extrabold text-yellow-400 transition-all">$5,000</p>
+                    <span class="text-yellow-500 font-medium mb-1">USD</span>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- Calculator Section -->
-      <div
-        class="glass p-8 rounded-2xl border-l-4 border-l-emerald-500 flex flex-col md:flex-row items-center justify-between gap-6"
-      >
-        <div>
-          <h3 class="text-xl font-bold text-white">Carbon Estimator</h3>
-          <p class="text-sm text-gray-400 mt-1">
-            Enter forest area (Hectares) to calculate potential carbon credits.
-          </p>
+        <!-- Map and Chart Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Map Card -->
+            <div class="glass p-5 rounded-2xl flex flex-col h-[450px]">
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-satellite-dish text-emerald-400 mr-2"></i> Satellite MRV Area</h3>
+                <div id="map" class="w-full h-full rounded-xl border border-white/10 z-0"></div>
+            </div>
+
+            <!-- Chart Card -->
+            <div class="glass p-5 rounded-2xl flex flex-col h-[450px]">
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i> Carbon Distribution</h3>
+                <div class="flex-grow flex justify-center items-center relative w-full h-full">
+                    <canvas id="carbonChart"></canvas>
+                </div>
+            </div>
         </div>
-        <div class="flex w-full md:w-auto gap-3">
-          <input
-            type="number"
-            id="hectares"
-            placeholder="E.g. 200"
-            class="w-full md:w-48 px-4 py-3 rounded-xl bg-black/40 text-white border border-white/10 outline-none"
-          />
-          <button
-            onclick="calculateCarbon()"
-            class="bg-white text-emerald-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-200"
-          >
-            Calculate
-          </button>
+
+        <!-- Calculator Section -->
+        <div class="glass p-8 rounded-2xl border-l-4 border-l-emerald-500 flex flex-col md:flex-row items-center justify-between gap-6 hover-float">
+            <div>
+                <h3 class="text-xl font-bold text-white">Carbon Estimator</h3>
+                <p class="text-sm text-gray-400 mt-1">Enter forest area (Hectares) to calculate potential credits.</p>
+            </div>
+            <div class="flex w-full md:w-auto gap-3">
+                <input type="number" id="hectares" placeholder="E.g. 200" class="w-full md:w-48 px-4 py-3 rounded-xl bg-black/40 text-white border border-white/10 focus:border-emerald-500 focus:outline-none transition-colors">
+                <button onclick="calculateCarbon()" class="bg-white text-emerald-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 hover:scale-105 transition-transform active:scale-95 shadow-lg">
+                    Calculate
+                </button>
+            </div>
         </div>
-      </div>
     </main>
 
-    <!-- ALL SCRIPTS IN ONE PLACE -->
+    <!-- ALL SCRIPTS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
-      // Wait for page to load completely
-      window.onload = function () {
-        // 1. INITIALIZE MAP
-        var map = L.map("map").setView([30.7268, 78.4354], 12);
-        L.tileLayer(
-          "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-          {
-            attribution: "&copy; OpenStreetMap",
-          }
-        ).addTo(map);
+        // 1. MAP INITIALIZATION (Runs as soon as script loads)
+        var map = L.map('map', {zoomControl: false}).setView([30.7268, 78.4354], 12);
+        
+        // Standard OpenStreetMap (The CSS filter makes it dark)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 18
+        }).addTo(map);
 
-        var forestArea = [
-          [30.735, 78.44],
-          [30.738, 78.45],
-          [30.73, 78.455],
-          [30.725, 78.445],
-        ];
-        L.polygon(forestArea, {
-          color: "#10b981",
-          fillColor: "#10b981",
-          fillOpacity: 0.4,
-        })
-          .addTo(map)
-          .bindPopup("Pilot Area");
+        // Add Zoom Control at bottom right to avoid overlapping UI
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // 2. INITIALIZE CHART
-        var ctx = document.getElementById("carbonChart").getContext("2d");
+        // Polygon for Pilot Area
+        var forestArea = [[30.7350, 78.4400], [30.7380, 78.4500], [30.7300, 78.4550], [30.7250, 78.4450]];
+        L.polygon(forestArea, { 
+            color: "#10b981", 
+            fillColor: "#10b981", 
+            fillOpacity: 0.4, 
+            weight: 3 
+        }).addTo(map).bindPopup("<b>Pilot Area</b><br>100 Hectares");
+
+        // Fix map render issue in flexbox
+        setTimeout(function(){ map.invalidateSize(); }, 400);
+
+        // 2. CHART INITIALIZATION
+        var ctx = document.getElementById('carbonChart').getContext('2d');
         new Chart(ctx, {
-          type: "doughnut",
-          data: {
-            labels: ["Apple Orchards", "Van Panchayat", "Reserve Forest"],
-            datasets: [
-              {
-                data: [30, 50, 20],
-                backgroundColor: ["#10b981", "#fbbf24", "#3b82f6"],
-                borderWidth: 0,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "white" } } },
-          },
+            type: 'doughnut',
+            data: {
+                labels: ['Apple Orchards', 'Van Panchayat', 'Reserve Forest'],
+                datasets: [{
+                    data: [30, 50, 20],
+                    backgroundColor: ['#10b981', '#fbbf24', '#3b82f6'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '65%',
+                plugins: { 
+                    legend: { 
+                        position: 'bottom',
+                        labels: { color: '#e5e7eb', font: { family: 'Plus Jakarta Sans', size: 13 }, padding: 20 } 
+                    } 
+                } 
+            }
         });
-      };
 
-      // 3. CALCULATOR LOGIC
-      function calculateCarbon() {
-        // Added by Member 3: Safety limit check
-        if (hectares > 10000) {
-          alert("For this pilot version, max limit is 10,000 hectares.");
-          return;
+        // 3. CALCULATOR LOGIC (Global Function so onclick works)
+        function calculateCarbon() {
+            var hectares = parseFloat(document.getElementById("hectares").value);
+
+            if (isNaN(hectares) || hectares <= 0) {
+                alert("Please enter a valid number.");
+                return;
+            }
+            if (hectares > 10000) {
+                alert("For this pilot version, max limit is 10,000 hectares.");
+                return;
+            }
+
+            var credits = hectares * 5; 
+            var revenue = credits * 10; 
+
+            // Update DOM
+            var areaEl = document.getElementById("area-display");
+            var creditEl = document.getElementById("credit-display");
+            var revEl = document.getElementById("revenue-display");
+
+            areaEl.innerText = hectares;
+            creditEl.innerText = credits;
+            revEl.innerText = "$" + revenue.toLocaleString();
+
+            // Add Animation
+            areaEl.classList.add("animate-pop");
+            creditEl.classList.add("animate-pop");
+            revEl.classList.add("animate-pop");
+
+            setTimeout(function() {
+                areaEl.classList.remove("animate-pop");
+                creditEl.classList.remove("animate-pop");
+                revEl.classList.remove("animate-pop");
+            }, 300);
         }
-        var hectares = parseFloat(document.getElementById("hectares").value);
-        if (isNaN(hectares) || hectares <= 0) {
-          alert("Please enter a valid number.");
-          return;
+
+        // 4. PDF GENERATION
+        function generatePDF() {
+            var element = document.getElementById("dashboard-content");
+            var opt = {
+                margin: 0.5,
+                filename: "Himalayan_Carbon_Report.pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#022c22' }, // Keeps dark background
+                jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+            };
+            html2pdf().set(opt).from(element).save();
         }
-
-        var credits = hectares * 5; // 1 Hectare = 5 Credits
-        var revenue = credits * 10; // $10 per credit
-
-        document.getElementById("credit-display").innerText = credits;
-        document.getElementById("revenue-display").innerText =
-          "$" + revenue.toLocaleString();
-      }
-
-      // 4. PDF GENERATION LOGIC
-      function generatePDF() {
-        var element = document.getElementById("dashboard-content");
-        var opt = {
-          margin: 0.5,
-          filename: "Himalayan_Carbon_Report.pdf",
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-        };
-        html2pdf().set(opt).from(element).save();
-      }
     </script>
-  </body>
+</body>
 </html>
