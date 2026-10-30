@@ -6,11 +6,8 @@
     <title>Himalayan Carbon Labs | Dashboard</title>
     
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
@@ -18,17 +15,6 @@
     
     <!-- Leaflet Map CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: { brand: '#10b981' }
-                }
-            }
-        }
-    </script>
 
     <style>
         body { 
@@ -36,40 +22,24 @@
             background-color: #022c22;
             background-image: radial-gradient(at 0% 0%, hsla(160,100%,15%,1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(170,100%,10%,1) 0, transparent 50%);
         }
-        
-        /* Premium Glassmorphism */
         .glass { 
             background: rgba(255, 255, 255, 0.03); 
             backdrop-filter: blur(16px); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
-
-        /* Hover Float Effect */
         .hover-float { transition: all 0.3s ease; }
         .hover-float:hover { 
             transform: translateY(-5px); 
             box-shadow: 0 10px 40px rgba(16, 185, 129, 0.15); 
             border-color: rgba(16, 185, 129, 0.3);
         }
-
-        /* Glowing Text for Numbers */
         .glow-text { text-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
-        
-        /* Fade In Animation */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
     </style>
 </head>
 <body class="text-gray-200 min-h-screen pb-10">
 
-    <!-- Premium Navbar -->
+    <!-- Navbar -->
     <nav class="sticky top-0 z-50 glass px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
         <div class="flex items-center gap-3">
             <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
@@ -85,9 +55,8 @@
     </nav>
 
     <!-- Main Content -->
-    <main id="dashboard-content" class="px-6 max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <main id="dashboard-content" class="px-6 max-w-7xl mx-auto space-y-8">
         
-        <!-- Header Title for Report -->
         <div class="border-b border-white/10 pb-4 mb-4">
             <h2 class="text-2xl font-bold text-white">Carbon MRV Dashboard</h2>
             <p class="text-emerald-400 text-sm mt-1"><i class="fa-solid fa-location-dot mr-1"></i> Uttarkashi Pilot Project, Uttarakhand</p>
@@ -95,35 +64,21 @@
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Card 1 -->
-            <div class="glass hover-float p-6 rounded-2xl relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 text-emerald-500/10 group-hover:text-emerald-500/20 transition-all duration-300">
-                    <i class="fa-solid fa-map-location-dot text-8xl"></i>
-                </div>
+            <div class="glass hover-float p-6 rounded-2xl">
                 <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Total Area Mapped</h3>
                 <div class="flex items-end gap-2 mt-3">
                     <p class="text-4xl font-extrabold text-white">100</p>
                     <span class="text-emerald-400 font-medium mb-1">Hectares</span>
                 </div>
             </div>
-            
-            <!-- Card 2 -->
-            <div class="glass hover-float p-6 rounded-2xl relative overflow-hidden group border-b-2 border-b-emerald-500">
-                <div class="absolute -right-4 -top-4 text-emerald-500/10 group-hover:text-emerald-500/20 transition-all duration-300">
-                    <i class="fa-solid fa-cloud text-8xl"></i>
-                </div>
-                <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Carbon Credits Generated</h3>
+            <div class="glass hover-float p-6 rounded-2xl border-b-2 border-b-emerald-500">
+                <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Carbon Credits</h3>
                 <div class="flex items-end gap-2 mt-3">
                     <p id="credit-display" class="text-4xl font-extrabold text-emerald-400 glow-text">500</p>
                     <span class="text-emerald-400 font-medium mb-1">tCO2e</span>
                 </div>
             </div>
-
-            <!-- Card 3 -->
-            <div class="glass hover-float p-6 rounded-2xl relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 text-yellow-500/10 group-hover:text-yellow-500/20 transition-all duration-300">
-                    <i class="fa-solid fa-indian-rupee-sign text-8xl"></i>
-                </div>
+            <div class="glass hover-float p-6 rounded-2xl">
                 <h3 class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Estimated Revenue</h3>
                 <div class="flex items-end gap-2 mt-3">
                     <p id="revenue-display" class="text-4xl font-extrabold text-yellow-400">$5,000</p>
@@ -133,54 +88,92 @@
         </div>
 
         <!-- Map and Chart Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in delay-1">
-            <!-- Map Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass p-5 rounded-2xl flex flex-col h-[450px]">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-satellite-dish text-emerald-400 mr-2"></i> Satellite MRV Area</h3>
-                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full border border-emerald-500/30">Live Data</span>
-                </div>
-                <div id="map" class="w-full flex-grow rounded-xl z-0 border border-white/10"></div>
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-satellite-dish text-emerald-400 mr-2"></i> Satellite MRV Area</h3>
+                <!-- Map Container - Height is Fixed here -->
+                <div id="map" class="w-full h-[350px] rounded-xl z-0 border border-white/10"></div>
             </div>
 
-            <!-- Chart Container -->
             <div class="glass p-5 rounded-2xl flex flex-col h-[450px]">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i> Carbon Distribution</h3>
-                </div>
-                <div class="flex-grow flex justify-center items-center relative">
-                    <canvas id="carbonChart" class="max-h-[300px]"></canvas>
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i> Carbon Distribution</h3>
+                <div class="flex-grow flex justify-center items-center relative w-full h-[350px]">
+                    <canvas id="carbonChart"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Calculator Section -->
-        <div class="glass p-8 rounded-2xl border-l-4 border-l-emerald-500 flex flex-col md:flex-row items-center justify-between gap-6 animate-fade-in delay-2">
-            <div class="flex items-center gap-4">
-                <div class="bg-emerald-500/20 p-3 rounded-full text-emerald-400 hidden md:block">
-                    <i class="fa-solid fa-calculator text-2xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold text-white">Carbon Estimator</h3>
-                    <p class="text-sm text-gray-400 mt-1">Enter forest area (Hectares) to calculate potential carbon credits.</p>
-                </div>
+        <div class="glass p-8 rounded-2xl border-l-4 border-l-emerald-500 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h3 class="text-xl font-bold text-white">Carbon Estimator</h3>
+                <p class="text-sm text-gray-400 mt-1">Enter forest area (Hectares) to calculate potential carbon credits.</p>
             </div>
             <div class="flex w-full md:w-auto gap-3">
-                <input type="number" id="hectares" placeholder="E.g. 100" class="w-full md:w-48 px-4 py-3 rounded-xl bg-black/40 text-white border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all">
-                <button onclick="calculateCarbon()" class="bg-white text-emerald-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-                    Calculate
-                </button>
+                <input type="number" id="hectares" placeholder="E.g. 200" class="w-full md:w-48 px-4 py-3 rounded-xl bg-black/40 text-white border border-white/10 outline-none">
+                <button onclick="calculateCarbon()" class="bg-white text-emerald-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-200">Calculate</button>
             </div>
         </div>
     </main>
 
-    <!-- Scripts -->
+    <!-- ALL SCRIPTS IN ONE PLACE -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- Link external JS files -->
-    <script src="map-chart.js"></script>
-    <script src="calculator-report.js"></script>
+    <script>
+        // Wait for page to load completely
+        window.onload = function() {
+            
+            // 1. INITIALIZE MAP
+            var map = L.map('map').setView([30.7268, 78.4354], 12);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+
+            var forestArea = [[30.7350, 78.4400], [30.7380, 78.4500], [30.7300, 78.4550], [30.7250, 78.4450]];
+            L.polygon(forestArea, { color: "#10b981", fillColor: "#10b981", fillOpacity: 0.4 }).addTo(map).bindPopup("Pilot Area");
+
+            // 2. INITIALIZE CHART
+            var ctx = document.getElementById('carbonChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Apple Orchards', 'Van Panchayat', 'Reserve Forest'],
+                    datasets: [{
+                        data: [30, 50, 20],
+                        backgroundColor: ['#10b981', '#fbbf24', '#3b82f6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: 'white' } } } }
+            });
+        };
+
+        // 3. CALCULATOR LOGIC
+        function calculateCarbon() {
+            var hectares = parseFloat(document.getElementById('hectares').value);
+            if(isNaN(hectares) || hectares <= 0) { alert("Please enter a valid number."); return; }
+            
+            var credits = hectares * 5; // 1 Hectare = 5 Credits
+            var revenue = credits * 10; // $10 per credit
+
+            document.getElementById('credit-display').innerText = credits;
+            document.getElementById('revenue-display').innerText = "$" + revenue.toLocaleString();
+        }
+
+        // 4. PDF GENERATION LOGIC
+        function generatePDF() {
+            var element = document.getElementById('dashboard-content');
+            var opt = {
+                margin: 0.5,
+                filename: 'Himalayan_Carbon_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
 </body>
 </html>
